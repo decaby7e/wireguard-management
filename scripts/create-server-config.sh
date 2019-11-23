@@ -8,7 +8,7 @@ for i in {2..10}
 do
   CURRENT_PUBKEY=$(cat host-$i/publickey)
   echo -e '\n' >> server/wg0.conf
-  echo -e "host-$i" >> server/wg0.conf
+  echo -e "#host-$i" >> server/wg0.conf
   echo -e "[Peer]\nPublicKey=$CURRENT_PUBKEY\nAllowedIPs=192.168.2.$i" >> server/wg0.conf
 done
 
