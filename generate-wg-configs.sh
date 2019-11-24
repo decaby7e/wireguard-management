@@ -68,9 +68,7 @@ CONF_DIR='configs/'
 
 # Check for parameter errors
 if [ $# -eq 0 ]; then
-  echo "Error: No parameters found."
-  usage
-  exit 1
+  echo "Using defaults (1 client and server in configs/)..."
 fi
 
 
