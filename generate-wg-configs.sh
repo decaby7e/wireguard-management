@@ -30,7 +30,7 @@ make_client_configs()
       mkdir $CLIENT_DIR
       wg genkey | tee $CLIENT_DIR/privatekey | wg pubkey > $CLIENT_DIR/publickey
       C_PRIVATE_KEY=$(cat $CLIENT_DIR/privatekey)
-      echo -e "[Interface]\nPrivateKey=$C_PRIVATE_KEY\nAddress=192.168.2.$i/32\n\n[Peer]\nPublicKey=$S_PUBLIC_KEY\nAllowedIPs=0.0.0.0/0\nEndpoint=ufsit.ddns.net:6969" > $CLIENT_DIR/wg$i.conf
+      echo -e "[Interface]\nPrivateKey=$C_PRIVATE_KEY\nAddress=192.168.2.$i/32\n\n[Peer]\nPublicKey=$S_PUBLIC_KEY\nAllowedIPs=0.0.0.0/0\nEndpoint=$SERVER_IP:$SERVER_PORT" > $CLIENT_DIR/wg$i.conf
     fi
 
   done
@@ -46,7 +46,7 @@ make_server_config()
 
   S_PRIVATE_KEY=$(cat server/privatekey)
 
-  echo -e "[Interface]\nAddress=192.168.2.1/24\nPostUp= iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE\nPostDown= iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE\nListenPort=6969\nPrivateKey=$S_PRIVATE_KEY" > server/wg0.conf
+  echo -e "[Interface]\nAddress=192.168.2.1/24\nPostUp= iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE\nPostDown= iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE\nListenPort=$SERVER_PORT\nPrivateKey=$S_PRIVATE_KEY" > server/wg0.conf
 
   for i in $(seq 2 $CONF_COUNT); do
     CURRENT_PUBKEY=$(cat client-$i/publickey)
@@ -58,7 +58,8 @@ make_server_config()
 
 usage()
 {
-  echo "Usage: generate-wg-configs.sh [-t 'client' | 'server' | 'all'] [-c count] [-d config-directory]"
+  echo "Usage: generate-wg-configs.sh [-t 'client' | 'server' | 'all'] [-c count] [-d config-directory] -i server-ip-address [-p server-port]"
+  echo "Defaults: -t: all,   -c: 1,   -d: configs/,   -p: 6969"
 }
 
 
@@ -68,23 +69,27 @@ usage()
 CONF_TYPE='all'
 CONF_COUNT=1
 CONF_DIR='configs/'
+SERVER_PORT=6969
 
-# Check for parameter errors
-if [ $# -eq 0 ]; then
-  echo -e "Using defaults (1 client and server in configs/)...\n"
-fi
-
-
-while getopts ":t:c:d:" arg; do
+while getopts ":t:c:d:i:p:" arg; do
   case $arg in
     t) CONF_TYPE=$OPTARG;;
     c) CONF_COUNT=$OPTARG;;
     d) CONF_DIR=$OPTARG;;
+    i) SERVER_IP=$OPTARG;;
+    p) SERVER_PORT=$OPTARG;;
   esac
 done
 
+# Check for parameter errors
 if ((CONF_COUNT < 1)); then
-  echo "Error: count must be greater than 0"
+  echo -e "Error: count must be greater than 0\n"
+  exit 1
+fi
+
+if [ "$SERVER_IP" == '' ]; then
+  echo -e "Error: IP cannot be left empty.\n"
+  usage
   exit 1
 fi
 
