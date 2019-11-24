@@ -1,6 +1,9 @@
 #!/bin/bash
 
 
+## Methods ##
+
+
 make_server_creds()
 {
   mkdir server/
@@ -9,19 +12,19 @@ make_server_creds()
 
 make_client_configs()
 {
+  echo -e "\n>Creating Client Configurations..."
   if [ ! -f server/publickey ]; then
-    echo "Server creds do not exist. Creating now..."
+    echo ">>Server creds do not exist. Creating now..."
     make_server_creds
   fi
 
   S_PUBLIC_KEY=$(cat server/publickey)
-  let CONF_COUNT=$CONF_COUNT+1
 
   for i in $(seq 2 $CONF_COUNT); do
     CLIENT_DIR=client-$i
 
     if [ -d $CLIENT_DIR ]; then
-      echo -e "$CLIENT_DIR already exists. Skipping..."
+      echo -e ">>$CLIENT_DIR already exists. Skipping..."
 
     else
       mkdir $CLIENT_DIR
@@ -35,14 +38,13 @@ make_client_configs()
 
 make_server_config()
 {
+  echo -e "\n>Creating Server Configurations..."
   if [ ! -f server/publickey ]; then
-    echo "Server creds do not exist. Creating now..."
+    echo -e ">>Server creds do not exist. Creating now..."
     make_server_creds
   fi
 
   S_PRIVATE_KEY=$(cat server/privatekey)
-  let CONF_COUNT=$CONF_COUNT+1
-
 
   echo -e "[Interface]\nAddress=192.168.2.1/24\nPostUp= iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE\nPostDown= iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE\nListenPort=6969\nPrivateKey=$S_PRIVATE_KEY" > server/wg0.conf
 
@@ -62,13 +64,14 @@ usage()
 
 ## Main ##
 
+
 CONF_TYPE='all'
 CONF_COUNT=1
 CONF_DIR='configs/'
 
 # Check for parameter errors
 if [ $# -eq 0 ]; then
-  echo "Using defaults (1 client and server in configs/)..."
+  echo -e "Using defaults (1 client and server in configs/)...\n"
 fi
 
 
@@ -90,6 +93,7 @@ if [ ! -d $CONF_DIR ]; then
 fi
 
 cd $CONF_DIR
+let CONF_COUNT=$CONF_COUNT+1
 
 if [ "$CONF_TYPE" == "client" ]; then
   echo "Creating client configurations..."
