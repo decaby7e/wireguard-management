@@ -1,3 +1,6 @@
 server/
 host-*/
+
 registered-clients
+
+configs/
