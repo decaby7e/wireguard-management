@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Notes:
+# - Add ability to append clients to an existing configuration hierarchy
 
 ## Methods ##
 
@@ -62,9 +64,7 @@ usage()
   echo "Defaults: -t: all,   -c: 1,   -d: configs/,   -p: 6969"
 }
 
-
 ## Main ##
-
 
 CONF_TYPE='all'
 CONF_COUNT=1
