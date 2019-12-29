@@ -1,14 +1,11 @@
 #!/bin/bash
 
 # PARAMETERS: make_client_config(SERVER_PUBKEY, SERVER_IP, SERVER_PORT)
-make_client_config() {
-    
-    
+gen_client_config() {
     if ( (($# != 4)) ); then
         echo "Error: Not enough parameters."
         usage
         exit 1
-
     fi
 
     CLIENT_DIR=client-$CLIENT_NUM
@@ -60,4 +57,4 @@ while getopts ":s:a:p:c:" arg; do
   esac
 done
 
-make_client_config $SERVER_KEY $SERVER_IP $SERVER_PORT $CLIENT_NUM
+gen_client_config $SERVER_KEY $SERVER_IP $SERVER_PORT $CLIENT_NUM

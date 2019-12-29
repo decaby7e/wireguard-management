@@ -5,7 +5,6 @@
 
 ## Methods ##
 
-
 make_server_creds()
 {
   mkdir server/
@@ -25,14 +24,25 @@ make_client_configs()
   for i in $(seq 2 $CONF_COUNT); do
     CLIENT_DIR=client-$i
 
-    if [ -d $CLIENT_DIR ]; then
-      echo -e ">>$CLIENT_DIR already exists. Skipping..."
-
-    else
+    if [ ! -d $CLIENT_DIR ]; then
+      echo -e ">>$CLIENT_DIR does not exist. Trying to create it..."
       mkdir $CLIENT_DIR
+      if [ $? != 0 ]; then
+        echo "Error: Could not create directory."
+        exit 1
+    else
+      CLIENT_TEMPLATE= \
+      "[Interface]\n \
+      PrivateKey=$C_PRIVATE_KEY\n \
+      Address=192.168.2.$i/32\n\n \
+      [Peer]\n \
+      PublicKey=$S_PUBLIC_KEY\n \
+      AllowedIPs=0.0.0.0/0\n \
+      Endpoint=$SERVER_IP:$SERVER_PORT"
+
       wg genkey | tee $CLIENT_DIR/privatekey | wg pubkey > $CLIENT_DIR/publickey
       C_PRIVATE_KEY=$(cat $CLIENT_DIR/privatekey)
-      echo -e "[Interface]\nPrivateKey=$C_PRIVATE_KEY\nAddress=192.168.2.$i/32\n\n[Peer]\nPublicKey=$S_PUBLIC_KEY\nAllowedIPs=0.0.0.0/0\nEndpoint=$SERVER_IP:$SERVER_PORT" > $CLIENT_DIR/wg$i.conf
+      echo -e  CLIENT_TEMPLATE > $CLIENT_DIR/wg$i.conf
     fi
 
   done
