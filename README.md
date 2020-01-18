@@ -1,5 +1,5 @@
 # Wireguard Management Scripts
-# Issues
+## Issues
  - Client configuration generation is broken
      - echo with entire config string is busted
      - PrivateKey does not get populated in client config
