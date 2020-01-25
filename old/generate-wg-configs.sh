@@ -3,6 +3,11 @@
 # Notes:
 # - Add ability to append clients to an existing configuration hierarchy
 
+## Imports ##
+
+. common.sh
+. gen-wg-client.sh
+
 ## Methods ##
 
 make_server_creds()

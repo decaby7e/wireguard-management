@@ -1,0 +1,14 @@
+version: 1
+
+network:
+  name: Test Network
+  
+  subnet: 192.168.5.0/24
+
+  server:
+
+  hosts:
+    - name: test-client 1
+      ip: 192.168.5.2
+      public_key:
+      private_key:
