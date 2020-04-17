@@ -1,14 +1,16 @@
 version: 1
 
-network:
-  name: Test Network
+my_test_network:
+  # entrypoint: entrypoint.example.com:7560  # Could be used for mesh networking at some point?
   
-  subnet: 192.168.5.0/24
-
-  server:
-
   hosts:
-    - name: test-client 1
-      ip: 192.168.5.2
-      public_key:
-      private_key:
+    my-personal-machine:
+      pubkey: SuperNotSecretPubKey==
+      # privkey: SuperSecretPrivateKey!!==  # Not such a good idea to have private keys in plaintext... Perhaps add encryption?
+      routes:
+        - 192.168.5.2/32
+        
+    my-server:
+      pubkey: 
+      routes: 192.168.5.1/32
+      
